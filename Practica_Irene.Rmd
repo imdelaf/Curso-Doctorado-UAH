@@ -1,0 +1,24 @@
+---
+title: "Practica_final"
+author: "Irene_MF"
+date: "19/1/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(palmerpenguins)
+data(package = 'palmerpenguins')
+```
+
+#Descripción de las características de la base de datos. 
+
+```{r}
+data('palmerpenguins')
+```
+
+
+

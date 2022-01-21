@@ -10,14 +10,24 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
+install.packages("palmerpenguins")
+
+```
+
+
+
+```{r}
 library(palmerpenguins)
 data(package = 'palmerpenguins')
 ```
 
+
 #Descripción de las características de la base de datos. 
 
+
 ```{r}
-data('palmerpenguins')
+data('penguins')
+names('penguins')
 ```
 
 

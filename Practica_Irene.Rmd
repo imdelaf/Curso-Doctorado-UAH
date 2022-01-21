@@ -11,7 +11,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 install.packages("palmerpenguins")
-
+```
+```{r}
+install.packages("tidyverse")
+```
+```{r}
+install.packages("patchwork")
 ```
 
 
@@ -19,16 +24,152 @@ install.packages("palmerpenguins")
 ```{r}
 library(palmerpenguins)
 data(package = 'palmerpenguins')
+library(tidyverse)
+library(ggplot2)
+library(patchwork)
 ```
 
 
-#Descripción de las características de la base de datos. 
+#Exploración de las características de la base de datos. 
 
 
 ```{r}
-data('penguins')
-names('penguins')
+str(penguins)
+head(penguins)
+colnames(penguins)
 ```
 
+#1. Descripción de las características de los individuos incluidos. 
+
+##Individuos totales son 344 
+```{r}
+dim(penguins)
+```
+
+
+##Tabla de individuos según sexo y especie
+
+```{r}
+table(penguins$species, penguins$sex, exclude = NULL)
+```
+
+#Descripción de la longitud del pico 
+
+```{r}
+penguins_bill_length <- penguins %>% 
+  select(-c(species,island,bill_depth_mm,flipper_length_mm,body_mass_g,sex,year)) %>% 
+  glimpse()
+summary(penguins_bill_length)
+sd(penguins$bill_length_mm, na.rm = TRUE)
+```
+##Media = 43.92
+##Desviación estándar = 5.46
+##Valor mínimo = 32.10 y valor máximo = 59.60 
+
+#Descripción de la profundidad del pico 
+
+```{r}
+penguins_bill_depth <- penguins %>% 
+  select(-c(species,island,bill_length_mm,flipper_length_mm,body_mass_g,sex,year)) %>% 
+  glimpse()
+summary(penguins_bill_depth)
+sd(penguins$bill_depth_mm, na.rm = TRUE)
+```
+
+##Media = 17.15
+##Desviación estándar = 1.97
+##Valor mínimo = 13.10 y valor máximo = 21.50 
+
+#Descripción de la longitud de la aleta
+
+```{r}
+penguins_flipper_length <- penguins %>% 
+  select(-c(species,island,bill_length_mm,bill_depth_mm,body_mass_g,sex,year)) %>% 
+  glimpse()
+summary(penguins_flipper_length)
+sd(penguins$flipper_length_mm, na.rm = TRUE)
+```
+##Media = 200.9
+##Desviación estándar = 14.06
+##Valor mínimo = 172.0 y valor máximo = 231.0  
+
+#Descripción del tamaño
+
+```{r}
+penguins_body_mass_g <- penguins %>% 
+  select(-c(species,island,bill_length_mm,flipper_length_mm,bill_depth_mm,sex,year)) %>% 
+  glimpse()
+summary(penguins_body_mass_g)
+sd(penguins$body_mass_g, na.rm = TRUE)
+```
+
+##Media = 4202
+##Desviación estándar = 801.9545
+##Valor mínimo = 2700 y valor máximo = 6300 
+
+#2. Representación de individuos muestreados de cada especie en cada isla 
+
+```{r}
+d <- ggplot(data = penguins, aes(penguins$island, color = penguins$species, fill = penguins$species)) + 
+  geom_bar() +
+  scale_color_manual(values = c("darkorange1", "darkorchid", "slateblue1" )) + 
+  scale_fill_manual(values = c("darkorange1", "darkorchid", "slateblue1"  ))
+d
+```
+
+##La especie Adelie es la única que se muestrea en las tres islas
+##En la isla de Dream se han muestreado 125 pingüinos.
+
+#3. Gráfico multipanel de cajas y bigotes del tamaño de los pingüinos según sexo para cada especie. 
+
+```{r}
+especies <- penguins %>% 
+  group_by(species)
+especies
+plot_especies <- ggplot(data = especies) + 
+  geom_boxplot(aes(penguins$body_mass_g, penguins$sex))
+plot_especies
+
+plot_especies +
+  facet_grid(rows = vars(penguins$species), scales = "free")
+
+```
+
+```{r}
+chinstrap <- penguins[penguins$"species"%in%"Chinstrap",]
+dim(chinstrap)
+
+plot_chinstrap <- ggplot(data = chinstrap) + 
+  geom_boxplot(aes(chinstrap$body_mass_g, chinstrap$sex))
+plot_chinstrap
+
+gentoo <- penguins[penguins$"species"%in%"Gentoo",]
+dim(gentoo)
+
+plot_gentoo <- ggplot(data = gentoo) + 
+  geom_boxplot(aes(body_mass_g, sex))
+plot_gentoo
+
+adelie <- penguins[penguins$"species"%in%"Adelie",]
+dim(adelie)
+
+plot_adelie <- ggplot(data = adelie) + 
+  geom_boxplot(aes(body_mass_g, sex))
+plot_adelie
+
+```
+
+```{r}
+library(patchwork)
+plot_adelie + plot_chinstrap + plot_gentoo
+plot_adelie / plot_chinstrap / plot_gentoo
+
+```
+
+
+
+
+##La especie que tiene mayor tamaño es gentoo
+##La especie chinstrap es la que tiene las hembras y los machos con un tamaño más similar. 
 
 
